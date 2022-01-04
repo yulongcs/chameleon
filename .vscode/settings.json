@@ -1,0 +1,11 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "empSyncBase.fileURL": [
+    {
+      "url": "https://chameleon-dev.yy.com/index.d.ts",
+      "name": "index.d.ts"
+    }
+  ]
+}

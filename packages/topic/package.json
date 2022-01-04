@@ -1,0 +1,112 @@
+{
+  "name": "@webbase/chameleoneditor",
+  "version": "1.0.8-test.3",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "yangshangzhi",
+      "email": "yangshangzhi@yy.com"
+    },
+    {
+      "name": "liangzhirong",
+      "email": "liangzhirong@yy.com"
+    }
+  ],
+  "publishConfig": {
+    "registry": "https://npm-registry.yy.com/"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "cp": "cp dist/static/js/engine.*.js dist/static/js/engine.js",
+    "dev": "emp dev --env dev && yarn run cp",
+    "dev:https": "cross-env SERVER_PORT=443 emp dev --hot --env dev && yarn run cp",
+    "dev:test": "emp dev --env test && yarn run cp",
+    "dev:prod": "emp dev --env prod && yarn run cp",
+    "build": "emp build --env dev && yarn run cp",
+    "build:dev": "emp build --env dev && yarn run cp",
+    "build:test": "emp build --ts --env test && yarn run cp",
+    "build:prod": "emp build --ts --env prod && yarn run cp",
+    "build:ts": "emp build --ts",
+    "build:analyze": "emp build --analyze",
+    "configure": "emp workspace -t configure",
+    "configure:test": "emp workspace -t configure -pe dev",
+    "configure:prod": "emp workspace -t configure",
+    "configure:dev": "emp workspace -t configure -pe dev",
+    "tsc": "emp tsc",
+    "start": "emp serve",
+    "start:prod": "yarn build:prod && emp serve",
+    "lint": "eslint ./src --ext .js --ext .ts --ext .tsx --fix",
+    "lintc": "eslint ./emp-config.js --ext .js --ext .ts --ext .tsx --fix",
+    "tss:gelib": "emp tss https://unpkg.yy.com/@gfe/ge-components/dist/federation/index.d.ts -n types/ge_components.d.ts"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
+    "@efox/emp-cli": "^1.10.1",
+    "@efox/emp-plugin-git-version": "^1.0.4",
+    "@efox/emp-plugin-ossupload": "^1.0.26",
+    "@efox/emp-plugin-workspace": "^1.0.11",
+    "@efox/emp-remote-md5": "^1.1.3",
+    "@efox/emp-sharemf-exposes-plugin": "^1.0.14",
+    "@efox/emp-tsconfig": "^1.1.3",
+    "@efox/eslint-config-react-prittier-ts": "^1.2.3",
+    "@types/loadjs": "^4.0.0",
+    "@types/lodash": "^4.14.170",
+    "@types/react": "^16.9.41",
+    "@types/react-color": "^3.0.4",
+    "@types/react-dnd": "^3.0.2",
+    "@types/react-dom": "^17.0.5",
+    "@types/react-router-dom": "^5.1.5",
+    "@yy/release-config-gitlab": "^1.0.23",
+    "cross-env": "^7.0.3",
+    "eslint-plugin-react": "^7.21.5",
+    "federation-exposes-plugin": "^0.0.5",
+    "html-webpack-externals-plugin": "^3.8.0",
+    "html-webpack-plugin": "^5.0.0-beta.6",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.0",
+    "postcss-pxtorem": "^5.1.1",
+    "semantic-release-monorepo": "^7.0.5"
+  },
+  "dependencies": {
+    "@efox/emp-single-mobx6": "^1.0.0-beta1.12",
+    "@tinymce/tinymce-react": "^3.12.6",
+    "antd": "^4.16.6",
+    "classnames": "^2.3.1",
+    "loadjs": "^4.2.0",
+    "lodash": "^4.17.21",
+    "mobx": "^6.3.2",
+    "mobx-react": "^7.2.0",
+    "react": "^17.0.1",
+    "react-color": "^2.19.3",
+    "react-dnd": "^14.0.2",
+    "react-dnd-html5-backend": "^14.0.0",
+    "react-dom": "^17.0.2",
+    "react-draggable": "^4.4.3",
+    "react-router-dom": "^5.1.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,ts,tsx}": "eslint --fix"
+  }
+}

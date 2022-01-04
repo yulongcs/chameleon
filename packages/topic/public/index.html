@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="x-dns-prefetch-control" content="on" />
+    <link rel="dns-prefetch" href="//unpkg.yy.com">
+    <link rel="dns-prefetch" href="//unpkg.bdgamelive.com">
+    <link rel="dns-prefetch" href="//multi-lang.yy.com">
+    <link rel="dns-prefetch" href="//cweb.yy.com">
+    <script>
+      window.__EMP__CHUNKS__ = "<%= htmlWebpackPlugin.files.js[0] %>"
+      window.__EMP = {}
+      eval(eval("<%= htmlWebpackPlugin.options.commonValue %>"))
+    </script>
+    <script>
+      window.onRefreshAct = function(res) {
+        try {
+          if (typeof res === 'string') {
+            res = JSON.parse(res)
+          }
+        } catch(e) {}
+        res.receiveWindowTime = Date.now()
+        sessionStorage.setItem('onRefreshAct', JSON.stringify(res))
+      }
+    </script>
+    <script>
+      console.time('html')
+      window.__EMP = {}
+      /** key: value */
+      window.__EMP.globalComponentCache = {
+        
+      }
+
+      var getURLSearchParams = function() {
+        return new URLSearchParams(window.location.search)
+      }
+
+      var getLocalEmpStore = function(name) {
+        try {
+          const store = JSON.parse(sessionStorage.getItem('empLocalStore') || '{}')
+          return name ? store[name]: store
+        } catch(e){
+          return {}
+        }
+        return {}
+      }
+
+      var setLocalEmpStore = function(key, value) {
+        const store = JSON.parse(sessionStorage.getItem('empLocalStore') || '{}')
+        store[key] = value
+        sessionStorage.setItem('empLocalStore', JSON.stringify(store))
+      }
+
+      var getGlobalSearchParams = function() {
+        var paramsObj = {
+          id: getURLSearchParams().get('pageId') || window.location.href.split(/\?|\//)[3],
+          edit: false,
+          env: 'prod',
+          mock: false,
+          engineEnv: getURLSearchParams().get('engineEnv') || window.__EMP_DEFAULT_VALUE.EMP_ENV,
+          serverEnv: getURLSearchParams().get('serverEnv') || window.__EMP_DEFAULT_VALUE.EMP_ENV,
+          remoteEnv: getLocalEmpStore('remoteEnv') || window.__EMP_DEFAULT_VALUE.EMP_ENV,
+          serverApi: (function() {
+            if (getURLSearchParams().get('serverEnv')) {
+              return getURLSearchParams().get('serverEnv') === 'prod' ? window.__EMP_DEFAULT_VALUE.HTTP_API : window.__EMP_DEFAULT_VALUE.HTTP_API_TEST
+            }
+            return window.__EMP_DEFAULT_VALUE.EMP_ENV !== 'prod' ? window.__EMP_DEFAULT_VALUE.HTTP_API_TEST : window.__EMP_DEFAULT_VALUE.HTTP_API
+          })()
+        }
+        getURLSearchParams().forEach(function(value, key) {
+          paramsObj[key] = value
+        })
+        return paramsObj
+      }
+      // 初始化参数
+      window.__EMP.globalParams = getGlobalSearchParams()
+  
+      var getOrigin = function() {
+        var origin = window.__EMP.globalParams.serverApi
+        return origin
+      }
+  
+      var getDevice = function() {
+        var userAgent = window.navigator.userAgent
+        var device = getURLSearchParams().get('device') || ''
+        var userAgentDevice =
+          (new RegExp(/Android|webOS|iPhone|iPod|BlackBerry|iPad|QQ|weixin|micromessenger|yy|mobile/, 'ig').test(userAgent) &&
+            'mobile') ||
+          (!new RegExp(/Android|webOS|iPhone|iPod|BlackBerry|iPad/, 'ig').test(userAgent) && 'pc') ||
+          (new RegExp(/pc|window|mac/, 'ig').test(userAgent) && 'pc') ||
+          ''
+        return {
+          device,
+          userAgentDevice,
+        }
+      }
+  
+      var getEnv = function() {
+        return window.__EMP.globalParams.env
+      }
+
+      var getServerEnv = function() {
+        return window.__EMP.globalParams.serverEnv
+      }
+
+      var getEdit = function() {
+        return window.__EMP.globalParams.edit
+      }
+  
+      var getEngineEnv = function() {
+        return window.__EMP.globalParams.engineEnv
+      }
+  
+      var getRemoteEnv = function() {
+        return window.__EMP.globalParams.remoteEnv
+      }
+
+      var getId = function() {
+        return window.__EMP.globalParams.id
+      }
+
+      var log = function() {
+        var args = Array.from(arguments)
+        console.log(`%c ${JSON.stringify(args)}`, 'color: #52c41a')
+      }
+
+      var setHeaderInfo = function () {
+        try {
+          document.title = window.__EMP.globalStore.pageContent.pageInfo.pageName || ''
+          var icon = document.querySelector('link[rel=icon]')
+          if (icon) {
+            icon.href = window.__EMP.globalStore.pageContent.pageInfo.pageIcon || icon.href
+          }
+        } catch(e) {}
+      }
+
+      window.__EMP.globalStore = {
+        id: '',
+        content: {}, // deviceContent
+        pageContent: {},
+        lang: {},
+        env: '',
+        device: '',
+        edit: getEdit(),
+      }
+      window.__EMP.globalModules = {
+        // [scope]: [emp.js]
+      }
+  
+      var onQueueAction = function(name) {
+        var scriptModules = window.__EMP.globalModules[name]
+        if (scriptModules.ready && !scriptModules.process) {
+          scriptModules.process = true
+          var callback = function() {}
+          // log('engine html', '待执行队列', scriptModules.queue.length, name)
+          while(callback = scriptModules.queue.shift()) {
+            callback && callback()
+          }
+          // log('engine html', '完成队列执行', scriptModules.script.src)
+          scriptModules.process = false
+        }
+      }
+      
+      var getScriptModules = function(name) {
+        window.__EMP.globalModules[name] = window.__EMP.globalModules[name] || {
+          script: null,
+          queue: [],
+          ready: false,
+          process: false,
+          name,
+          container: null,
+          containerQueue: []
+        }
+        return window.__EMP.globalModules[name]
+      }
+  
+      var createScriptElement = function(scope, url, callback) {
+        if (!url) {
+          return callback && setTimeout(callback, 0)
+        }
+        var script = document.createElement('script')
+        var scriptModules = getScriptModules(scope)
+  
+        scriptModules.queue.push(function() {
+          callback && setTimeout(callback, 0)
+        })
+        
+        if (scriptModules.script) {
+          // log('engine html', '标签存在', url, scriptModules.queue.length)
+          return onQueueAction(scope)
+        } else {
+          scriptModules.script = script
+        }
+  
+        script.src = url
+        script.crossOrigin = 'anonymous'
+        script.onload = function() {
+          scriptModules.container = window[scope]
+          scriptModules.ready = true
+          onQueueAction(scope)
+          log('engine html', '完成创建标签', url, scriptModules.queue.length)
+        }
+  
+        script.onerror = function() {
+          getEdit() && alert('组件地址加载失败:' + url)
+        }
+        document.head.appendChild(script)
+      }
+
+      var onContainerQueueAction = function(scope) {
+        var empModule = getScriptModules(scope)
+        if (empModule.containerprocess) {
+          return
+        }
+        if (empModule && empModule.container && empModule.container.hasInit) {
+          empModule.containerprocess = true
+          var callback = null
+          while(callback = empModule.containerQueue.shift()) {
+            callback && setTimeout(callback, 0)
+          }
+        }
+        empModule.containerprocess = false
+      }
+
+      var fetchAction = function (url) {
+        return fetch(url, {
+          cache: 'no-cache',
+          headers: {
+            accept: 'application/json, text/plain, */*',
+          },
+        })
+      }
+
+      var getSuffix = function() {
+        return getEdit() || getServerEnv() !== 'prod' ? `?t=${Date.now()}` : ''
+      }
+  
+      var requestSection = function(id, env) {
+        var urls = [
+          `${getOrigin()}/topicPage/getSection/${id}/pc_${env}_zh${getSuffix()}`,
+          `${getOrigin()}/topicPage/getSection/${id}/mobile_${env}_zh${getSuffix()}`,
+          `${getOrigin()}/topicPage/getSection/${id}/other_${env}_zh${getSuffix()}`,
+        ]
+        // server压测使用
+        window.__EMP_SERVER_TEST_URLS = urls.concat(`${getOrigin()}/topicPage/${id}${getSuffix()}`)
+        return urls.map(function(item) {
+          return fetchAction(item)
+            .then(function(res) {return res.json()})
+            .then(function(res) {
+              return res.code === 0 ? res.data : res
+            })
+        })
+      }
+  
+      var requestPage = function(id) {
+        return fetchAction(`${getOrigin()}/topicPage/${id}${getSuffix()}`)
+          .then(function(res){ return  res.json() })
+          .then(function(res) {
+            return res.code === 0 ? res.data : res
+          })
+      }
+  
+      // 加载引擎的版本
+      var initEngine = function() {
+        // 执行回调
+        var callback = function() {
+          window.__EMP.ready = true
+          window.__EMP.readyFunction && window.__EMP.readyFunction()
+          updateLocalStore()
+        }
+        var engineEnv = getEngineEnv()
+        var isOpen = window.__EMP.globalStore.pageContent.engineVersion.open
+        var remoteUrl = window.__EMP__CHUNKS__
+        if (isOpen && engineEnv !== 'dev') {
+          remoteUrl = window.__EMP.globalStore.pageContent.engineVersion[engineEnv]
+          console.log("加载引擎资源")
+          // callback()
+          // return
+        }
+        var scope = 'emp_engine'
+        remoteUrl && createScriptElement(scope, remoteUrl, function() {
+          console.log(`%c资源版本地址： ${remoteUrl}`, 'color: red')
+          callback()
+        })
+      }
+
+      // 加载组件emp版本
+      var initEmpModules = function() {
+        var remoteEnv = getRemoteEnv()
+        var empModules = window.__EMP.globalStore.renderData.empModules
+        empModules.map(function(item) {
+          setTimeout(() => {
+            typeof item !== 'string' && createScriptElement(item.rmn, item.unpkgUrlMap[remoteEnv], function() {})
+          }, 0)
+        })
+      }
+
+      var fetchData = function() {
+        var id = getId()
+        var env = getEnv()
+        var deviceObj = getDevice()
+        log(`id:${id}`, `env:${env}`)
+        log(`deviceObj:`, deviceObj)
+        try {
+          if (id && String(id).length === 24) {
+            console.time('requestTime')
+            var result = Promise.all([requestPage(id)].concat(requestSection(id, env)))
+            result.then(function(res) {
+              console.timeEnd('requestTime')
+              var {device, userAgentDevice} = deviceObj
+              var pageContent = res[0].content
+              var dataList = [
+                pageContent[device],
+                pageContent[userAgentDevice],
+                pageContent['pc'],
+                pageContent['mobile'],
+                pageContent['other'],
+              ]
+              let data = null
+              let destDevice = device
+              if (dataList[0] && dataList[0][env].status) {
+                data = dataList[0][env]
+              }
+              if (!data && dataList[1] && dataList[1][env].status) {
+                data = dataList[1][env]
+                destDevice = userAgentDevice
+              }
+              if (!data && dataList[2] && dataList[2][env].status) {
+                data = dataList[2][env]
+                destDevice = 'pc'
+              }
+              if (!data && dataList[3] && dataList[3][env].status) {
+                data = dataList[3][env]
+                destDevice = 'mobile'
+              }
+              if (!data && dataList[4] && dataList[4][env].status) {
+                data = dataList[4][env]
+                destDevice = 'other'
+              }
+              // TODO
+              pageContent.engineVersion = pageContent.engineVersion || {
+                // 新版本
+                dev: 'https://unpkg.yy.com/@webbase/chameleoneditor@1.0.8/dist/static/js/engine.js',
+                test: 'https://unpkg.yy.com/@webbase/chameleoneditor@1.0.8/dist/static/js/engine.js',
+                prod: 'https://unpkg.yy.com/@webbase/chameleoneditor@1.0.8/dist/static/js/engine.js',
+                open: false
+              }
+  
+              if (data) {
+                var lang = destDevice === 'pc' ? res[1] : destDevice === 'mobile' ? res[2] : res[3]
+                window.__EMP.globalStore = Object.assign(window.__EMP.globalStore, {
+                  id,
+                  renderData: data,
+                  pageContent,
+                  lang,
+                  env,
+                  device: destDevice,
+                })
+                Promise.all([initEngine(), setHeaderInfo(), initEmpModules()])
+              } else {
+                getEdit() && alert('id找不到数据')
+              }
+            }).catch(function(e){
+              console.warn('异常', e)
+            })
+          } else {
+            window.location.pathname !== '/admin' && window.location.replace('/admin')
+          }
+        } catch (e) {
+          getEdit() && alert('数据处理异常')
+        }
+      }
+      window.__EMP.globalFunction = {
+        onContainerQueueAction,
+        getURLSearchParams,
+        onQueueAction,
+        getScriptModules,
+        createScriptElement,
+        fetchAction,
+        getOrigin,
+        getDevice,
+        getEngineEnv,
+        getRemoteEnv,
+        getEnv,
+        getId,
+        getLocalEmpStore,
+        setLocalEmpStore,
+      }
+      /**
+       * 更新本地数据
+       */
+      const updateLocalStore = function() {
+        if (!getEdit()) {
+          return
+        }
+        sessionStorage.setItem('__EMP_globalStore', JSON.stringify(window.__EMP.globalStore))
+        sessionStorage.setItem('__EMP_globalStore_time', Date.now().toString())
+      }
+      fetchData()
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"
+    />
+    <!-- EMP inject title -->
+    <title>&lrm;</title>
+    <!-- EMP inject css -->
+    <% for (let i in htmlWebpackPlugin.options.files.css) { %>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.files.css[i] %>" crossorigin="anonymous"/>
+    <% } %>
+    <!-- EMP inject js -->
+    <% for (let i in htmlWebpackPlugin.options.files.js) { %>
+    <script src="<%= htmlWebpackPlugin.options.files.js[i] %>"></script>
+    <% } %>
+    <!-- <script src="<%= htmlWebpackPlugin.files.js[0] %>" async></script> -->
+  </head>
+  <script>
+    window._reportTimeList = window._reportTimeList || []
+    document.addEventListener('DOMContentLoaded', function(){
+        _reportTimeList.push({type: 'DOMContentLoaded', time: Date.now()})
+        console.info('DOMContentLoaded reportTimeList', JSON.stringify(_reportTimeList))
+    })
+    window.onload = () => {
+      _reportTimeList = _reportTimeList.concat({type: 'onload', time: Date.now()})
+        console.info('onload reportTimeList', JSON.stringify(_reportTimeList))
+    }
+    window.onerror = () => {
+      _reportTimeList = _reportTimeList.concat([Date.now(), 'onerror'])
+    }
+  </script>
+  
+  <body>
+    <div id="emp-root"></div>
+  </body>
+</html>

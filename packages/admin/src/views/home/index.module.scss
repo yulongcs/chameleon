@@ -1,0 +1,23 @@
+.page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: hsla(0, 0%, 0%, 0.05);
+}
+.content {
+  padding: 40px;
+  box-shadow: 0 0 6px 8px hsla(0, 0%, 0%, 0.02);
+  width: 300px;
+
+  > h1 {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .btnEntry {
+    margin: 20px auto 0 auto;
+    display: block;
+  }
+}

@@ -1,0 +1,66 @@
+@import 'src/css/include';
+
+.module-header {
+  @include flex-center();
+  @include text-overflow();
+  margin-bottom: $margin-base * 2;
+
+  .form-item,
+  .form-item-large,
+  .form-item-small {
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+
+    &:first-child {
+      margin-left: 0;
+    }
+    &:last-child {
+      margin-right: 0;
+    }
+
+    > .label {
+      flex: 0 0 auto;
+    }
+    > *[class^='ant-'] {
+      flex: 1 1 1px;
+    }
+  }
+
+  .form-item-small {
+    width: 200px;
+  }
+  .form-item {
+    width: 260px;
+  }
+  .form-item-large {
+    width: 320px;
+  }
+}
+.module-header-main {
+  flex: 1 1 1px;
+  @include flex-center();
+}
+.module-header-aside {
+  flex: 0 0 auto;
+  @include flex-center();
+}
+.flex-center {
+  @include flex-center();
+}
+.ml-base {
+  margin-left: $margin-base;
+}
+.mr-base {
+  margin-right: $margin-base;
+}
+.table-handle-flex {
+  display: flex;
+  align-items: center;
+  > * {
+    margin-right: 10px;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}

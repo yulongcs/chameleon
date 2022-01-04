@@ -1,0 +1,35 @@
+@import 'src/css/include';
+
+.page {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+}
+.aside {
+  overflow: hidden;
+  overflow-y: auto;
+  border-right: 1px solid $border-color-base;
+
+  :global {
+    .ant-menu-inline {
+      border-right: none;
+    }
+  }
+}
+.logo {
+  margin: 1px;
+  padding: 20px 0;
+  display: block;
+  font-size: 18px;
+  text-align: center;
+  color: $color-pink;
+  font-weight: 700;
+}
+.main {
+  min-width: 768px;
+  min-height: 500px;
+  overflow: auto;
+}
+.container {
+  padding: $margin-base;
+}

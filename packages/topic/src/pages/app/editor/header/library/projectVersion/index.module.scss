@@ -1,0 +1,20 @@
+.flexbox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+.optionbox {
+    border: 1px solid rgba($color: #000000, $alpha: 0.3);
+    padding: 10px;
+    .textarea {
+        width: 360px;
+    }
+}
+.isPageAsset {
+    border: 1px solid rgba($color: #1d66f0, $alpha: 1);
+}
+.verionbox {
+    max-height: 70vh;
+    overflow-y: scroll;
+}

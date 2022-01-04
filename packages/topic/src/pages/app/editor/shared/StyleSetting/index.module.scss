@@ -1,0 +1,33 @@
+.styles_container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.form_view {
+  width: 100%;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  height: 40px;
+}
+
+.row {
+  margin: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.line {
+  margin: 0 !important;
+}
+
+.form_item_label {
+  display: inline-block;
+  // width: 80px;
+  // text-align: right;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

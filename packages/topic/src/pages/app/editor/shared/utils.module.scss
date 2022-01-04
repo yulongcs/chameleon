@@ -1,0 +1,6 @@
+.modal {
+  height: 400px;
+  [class='ant-tabs-content-holder'] {
+    max-height: 180px;
+  }
+}

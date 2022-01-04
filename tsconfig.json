@@ -1,0 +1,19 @@
+{
+  "extends": "@efox/emp-tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "noEmit": true,
+    "baseUrl": ".",
+    "suppressImplicitAnyIndexErrors": true,
+    "paths": {
+      "src/*": [
+        "packages/admin/src/*",
+        "packages/topic/src/*"
+      ]
+    }
+  },
+  "include": [
+    "@types",
+    "./"
+  ],
+}

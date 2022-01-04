@@ -1,0 +1,228 @@
+image: harbor.yy.com/front_end/efox:node-v14.16withLernaAndGit
+
+variables:
+  ROOT_BUILD_PATH: $CI_PROJECT_DIR/build
+
+cache:
+  key: $CI_COMMIT_REF_SLUG
+  paths:
+    - node_modules/
+    # - bower_components/
+    - .yarn
+    - $ROOT_BUILD_PATH/
+
+stages:
+  - install
+  - build
+  - deploy
+
+install_dependency:
+  stage: install
+  # 把文件传递到下一个job expire_in 过期时间
+  artifacts:
+    # untracked: true # 把没版本跟踪的产物发送到 下一个任务
+    paths:
+      - node_modules/
+      # - bower_components/
+      # - .yarn/
+      - $ROOT_BUILD_PATH/
+    expire_in: 1 week
+  script:
+    - mkdir -p $ROOT_BUILD_PATH
+    - ls $CI_PROJECT_DIR/
+    - lerna bootstrap
+    - lerna add @efox/emp-plugin-ossupload
+
+  only:
+    refs:
+      - /beta/
+      - /^test.*/
+      - master
+
+monorepo_build_beta_test:
+  stage: build
+  # variables:
+  #   DIR: 'topic'
+  artifacts:
+    # untracked: true 
+    paths:
+      - node_modules/
+      # - bower_components/
+      # - .yarn/
+      - $ROOT_BUILD_PATH/
+    expire_in: 1 week
+  extends:
+    # - .build_project_test
+  script: 
+    - ls
+    - mkdir -p $ROOT_BUILD_PATH
+    - ls
+    - npm config set registry https://npm-registry.yy.com
+    - printf '//npm-registry.yy.com/:_password=%s\n//npm-registry.yy.com/:username=%s\n//npm-registry.yy.com/:email=%s' ${YY_NPM_USER_PASS} ${YY_NPM_USER_NAME} ${YY_NPM_USER_EMAIL}>~/.npmrc
+    - cat ~/.npmrc
+    
+    - export BUILD_ENV=test
+    - BUILD_ENV=test lerna exec --concurrency 1 -- npx --no-install semantic-release -e semantic-release-monorepo
+  after_script: 
+    - pwd
+  cache:
+    policy: pull
+  only:
+    refs:
+      - /^beta.*/
+      - /^test.*/
+
+monorepo_build_beta_prod:
+  stage: build
+  # variables:
+  #   DIR: 'topic'
+  artifacts:
+    # untracked: true 
+    paths:
+      - node_modules/
+      # - bower_components/
+      # - .yarn/
+      - $ROOT_BUILD_PATH/
+    expire_in: 1 week
+  extends:
+    # - .build_project_test
+  script: 
+    - ls
+    - mkdir -p $ROOT_BUILD_PATH
+    - ls
+    - npm config set registry https://npm-registry.yy.com
+    - printf '//npm-registry.yy.com/:_password=%s\n//npm-registry.yy.com/:username=%s\n//npm-registry.yy.com/:email=%s' ${YY_NPM_USER_PASS} ${YY_NPM_USER_NAME} ${YY_NPM_USER_EMAIL}>~/.npmrc
+    - cat ~/.npmrc
+
+    - export BUILD_ENV=prod
+    - BUILD_ENV=prod lerna exec --concurrency 1 -- npx --no-install semantic-release -e semantic-release-monorepo
+  after_script: 
+    - pwd
+  cache:
+    policy: pull
+  only:
+    refs:      
+      - master
+      
+admin_build_test:
+  stage: build
+  variables:
+    DIR: 'admin'
+  extends:
+    - .build_project_test
+  only:
+    # changes:
+    #   - packages/admin/**/*
+    refs:
+      - /^beta.*/
+      - /^test.*/
+
+# topic_build_test:
+#   stage: build
+#   variables:
+#     DIR: 'topic'
+#   extends:
+#     - .build_project_test
+#   only:
+#     # changes:
+#     #   - packages/topic/**/*
+#     refs:
+#       - /^beta.*/
+#       - /^test.*/
+
+# bdgamelive_build_test:
+#   stage: build
+#   variables:
+#     DIR: 'bdgamelive'
+#   extends:
+#     - .build_project_test
+#   only:
+#     # changes:
+#     #   - packages/bdgamelive/**/*
+#     refs:
+#       - /^beta.*/
+#       - /^test.*/
+
+admin_build:
+  stage: build
+  variables:
+    DIR: 'admin'
+  extends:
+    - .build_project
+  only:
+    # changes:
+    #   - packages/admin/**/*
+    refs:
+      - master
+
+.build_project_test:
+  artifacts:
+    # untracked: true 
+    paths:
+      - node_modules/
+      # - bower_components/
+      # - .yarn/
+      - $ROOT_BUILD_PATH/
+    expire_in: 1 week
+  before_script:
+    - cd packages/$DIR
+  script:
+    - pwd
+    - ls
+    - mkdir -p $ROOT_BUILD_PATH
+    - ls
+    - yarn
+    - yarn build:test
+    - mkdir $ROOT_BUILD_PATH/${DIR}
+    - cp -r dist/* $ROOT_BUILD_PATH/${DIR}
+    - ls $ROOT_BUILD_PATH/${DIR}
+  cache:
+    policy: pull
+  only:
+    refs:
+      - /^beta.*/
+      - /^test.*/
+
+.build_project:
+  artifacts:
+    # untracked: true
+    paths:
+      - node_modules/
+      # - bower_components/
+      # - .yarn/
+      - build/
+    expire_in: 1 week
+  script:
+    - cd packages/$DIR
+    - ls
+    - mkdir -p $ROOT_BUILD_PATH
+    - ls
+    - yarn
+    - yarn build:prod
+    - mkdir $ROOT_BUILD_PATH/${DIR}
+    - cp -r dist/* $ROOT_BUILD_PATH/${DIR}/
+    - ls $ROOT_BUILD_PATH/${DIR}
+  cache:
+    policy: pull
+  only:
+    refs:
+      - master
+      
+deploy_project:
+  stage: deploy
+  tags:
+    - webfe
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - $ROOT_BUILD_PATH/
+  script:
+    - ls $ROOT_BUILD_PATH
+    - rm -rf $ROOT_BUILD_PATH/basic
+  cache:
+    policy: pull
+  only:
+    refs:
+      - /^beta.*/
+      - /^test.*/
+      - master

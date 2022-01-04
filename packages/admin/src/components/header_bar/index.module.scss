@@ -1,0 +1,23 @@
+@import '../../css/include';
+.page {
+  height: 60px;
+  padding: 0 $margin-base;
+  border-bottom: 1px solid $border-color-base;
+  display: flex;
+  align-items: center;
+}
+.left {
+  flex: 1 1 1px;
+}
+.right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.nickname {
+  margin: 0 20px 0 10px;
+  max-width: 180px;
+  @include text-overflow();
+  color: #666;
+}

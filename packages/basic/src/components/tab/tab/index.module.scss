@@ -1,0 +1,27 @@
+.Tabs {
+  display: flex;
+  justify-content: center;
+  [class='ge-tabnav-list'] {
+    display: inline-flex;
+    margin: 0 auto;
+    width: fit-content;
+  }
+}
+.tabitem {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  // font-size: 36px;
+  p {
+    margin: 0;
+  }
+}
+.tablist {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+}

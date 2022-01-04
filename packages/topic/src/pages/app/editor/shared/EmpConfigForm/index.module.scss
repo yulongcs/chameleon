@@ -1,0 +1,27 @@
+.empty {
+  margin: 80px auto 0;
+}
+.Collapse {
+  margin-left: -14px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  [class*='ant-collapse-content'] {
+    background: #fff;
+  }
+}
+.itemContainer{
+  .textArea{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    :first-child{
+      flex:1;
+    }
+    .magnify{
+      height: 32px;
+      line-height: 32px;
+      }
+  }
+}
+

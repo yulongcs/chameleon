@@ -1,0 +1,18 @@
+{
+  "name": "chameleon",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/basic",
+      "packages/topic"
+    ]
+  },
+  "scripts": {
+    "dev": "lerna run --parallel dev",
+    "dev:admin": "lerna run --scope admin --parallel dev",
+    "dev:topic": "lerna run --scope @webbase/chameleonapp dev"
+  },
+  "devDependencies": {
+    "lerna": "^3.22.1"
+  }
+}

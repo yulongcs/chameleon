@@ -1,0 +1,27 @@
+$color-blue: #1890ff;
+$color-purple: #722ed1;
+$color-cyan: #13c2c2;
+$color-green: #52c41a;
+$color-magenta: #eb2f96;
+$color-pink: #eb2f96;
+$color-red: #f5222d;
+$color-orange: #fa8c16;
+$color-yellow: #fadb14;
+$color-lime: #a0d911;
+$color-gold-base: #faad14;
+
+$border-color-base: hsla(0, 0%, 0%, 0.07);
+
+$margin-base: 15px;
+
+@mixin text-overflow() {
+  overflow: hidden;
+  white-space: nowrap;
+  word-break: normal;
+  text-overflow: ellipsis;
+}
+
+@mixin flex-center() {
+  display: flex;
+  align-items: center;
+}

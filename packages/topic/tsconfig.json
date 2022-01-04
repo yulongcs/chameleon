@@ -1,0 +1,14 @@
+{
+	"extends": "@efox/emp-tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "outDir": "./dist"
+  },
+  "include": [
+    "src", "depends", "types-platform", "types"
+  ],
+  "exclude": [
+    "node_modules",
+  ]
+}

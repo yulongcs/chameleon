@@ -1,0 +1,57 @@
+# 指定需要使用的docker image，请先上传至harbor.yy.com
+image: harbor.yy.com/front_end/efox:node-v14.16withLernaAndGit
+
+stages:
+  #- build
+  #- deploy
+
+before_script:
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+deploy-commit:
+  #stage: build
+  tags:
+    - webfe
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - dist/
+  script:
+    - yarn
+    - yarn build:test
+  only:
+    - /^test.*/
+
+deploy-dev:
+  #stage: build
+  tags:
+    - webfe
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - dist/
+  before_script:
+    - yarn
+    - yarn add semantic-release @semantic-release/gitlab -g 
+  script:
+    - yarn build:test
+    - ls dist
+  only:
+    - /^beta*/
+
+deploy-master:
+  tags:
+    - webfe
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - dist/
+  script:
+    - yarn
+    - yarn build:prod
+  only:
+    - master

@@ -1,0 +1,10 @@
+node_modules
+yarn-error.log
+dist
+.emp-cache
+.idea
+.DS_Store
+**/.DS_Store
+
+**/depends
+**/empconfig/mf-local-workspace.js

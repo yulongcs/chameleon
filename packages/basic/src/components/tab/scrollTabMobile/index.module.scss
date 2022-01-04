@@ -1,0 +1,43 @@
+.tabbox {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    overflow-x: auto;
+    margin-bottom: 10px;
+    &::-webkit-scrollbar {
+        width: 0px;
+        height: 4px;
+    }
+    .defaultItem {
+        flex: 1;
+        background: #ffffff;
+        min-width: 33%;
+        width: 50%;
+        height: 80px;
+        line-height: 80px;
+        font-size: 30px;
+        position: relative;
+        text-align: center;
+        text-overflow: hidden;
+    }
+    &_default {
+        @extend .defaultItem;
+    }
+    &_active {
+        @extend .defaultItem;
+        font-weight: 600;
+        &::after {
+            content: "";
+            position: absolute;
+            height: 4px;
+            background-color: black;
+            width: 40px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            border-radius: 2px;
+        }
+    }
+}

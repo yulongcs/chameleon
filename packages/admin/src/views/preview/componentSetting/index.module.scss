@@ -1,0 +1,69 @@
+.setting {
+    width: 400px;
+    background-color: white;
+    box-shadow: 1px 1px 1px 1px grey;
+    position: absolute;
+    left: 1000px;
+    top: 80px;
+    height: 550px;
+    z-index: 10;
+    .header {
+      width: 100%;
+      position: relative;
+      height: 40px;
+      background: #f7f8f9;
+      border-radius: 8px 8px 0 0;
+      line-height: 40px;
+      padding-left: 20px;
+      font-weight: 700;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      margin-bottom: 5px;
+      font-size: 18px;
+      span {
+        color: rgb(153, 153, 153);
+        font-weight: normal;
+        font-size: 12px;
+      }
+      .name{
+        font-weight: normal;
+        font-size: 16px; 
+      }
+    }
+    .section {
+      padding: 0px 10px 10px 20px;
+      // max-height: 400px;
+      // overflow-y: auto;
+      & > div {
+        overflow: visible;
+      }
+      [class='ant-tabs-content-holder'] {
+        height: 400px;
+        overflow: auto;
+      }
+      label {
+        strong {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          display: block;
+          max-width: 90px;
+          font-size: 14px;
+          text-align: left;
+        }
+      }
+      .loading {
+        margin: 80px auto 0;
+        text-align: center;
+        display: block;
+      }
+    }
+    .footer{
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }

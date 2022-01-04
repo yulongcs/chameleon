@@ -1,0 +1,49 @@
+.uploadBox {
+  position: relative;
+  :global(.ant-upload-select-picture-card) {
+    overflow: hidden;
+  }
+  &:hover {
+    .hoverpreview,
+    .hoverTips {
+      display: block;
+    }
+  }
+  .hoverpreview {
+    display: none;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+  }
+  .previewIcon {
+    font-size: 8px;
+    color: var(--hoc_c_bg_f);
+  }
+}
+
+.hoverTips {
+  margin-top: 10px;
+  // display: none;
+  // width: 100%;
+  // max-width: 100px;
+  // position: absolute;
+  // top: -20px;
+  // top: 0;
+  // left: 0;
+  // right: -100px;
+  color: var(--hoc_c_bg_f);
+}
+.previrewModal {
+  text-align: center;
+  :global(.ant-modal-content) {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  :global(.ant-modal-close-icon) {
+    color: #fff;
+  }
+  img {
+    max-width: 90%;
+  }
+}

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <script>
+      console.time('html')
+      // 初始化EMP
+      window.__EMP = {}
+      eval(eval("<%= htmlWebpackPlugin.options.commonValue %>"))
+      window.__EMP.globalComponentCache = {
+        // key: value // 全局组件缓存
+      }
+
+      var getURLSearchParams = function() {
+        return new URLSearchParams(window.location.search)
+      }
+
+      var getLocalEmpStore = function(name) {
+        try {
+          const store = JSON.parse(sessionStorage.getItem('empLocalStore') || '{}')
+          return name ? store[name]: store
+        } catch(e){
+          return {}
+        }
+        return {}
+      }
+
+      var setLocalEmpStore = function(key, value) {
+        const store = JSON.parse(sessionStorage.getItem('empLocalStore') || '{}')
+        store[key] = value
+        sessionStorage.setItem('empLocalStore', JSON.stringify(store))
+      }
+
+      var getGlobalSearchParams = function() {
+        var paramsObj = {
+          edit: false,
+          env: 'prod',
+          mock: false,
+          engineEnv: 'prod',
+          serverEnv: getURLSearchParams().get('serverEnv') || window.__EMP_DEFAULT_VALUE.EMP_ENV,
+          remoteEnv: getLocalEmpStore('remoteEnv') || window.__EMP_DEFAULT_VALUE.EMP_ENV,
+          serverApi: (function() {
+            if (getURLSearchParams().get('serverEnv')) {
+              return getURLSearchParams().get('serverEnv') === 'prod' ? window.__EMP_DEFAULT_VALUE.HTTP_API : window.__EMP_DEFAULT_VALUE.HTTP_API_TEST
+            }
+            return window.__EMP_DEFAULT_VALUE.EMP_ENV !== 'prod' ? window.__EMP_DEFAULT_VALUE.HTTP_API_TEST : window.__EMP_DEFAULT_VALUE.HTTP_API
+          })()
+        }
+        getURLSearchParams().forEach(function(value, key) {
+          paramsObj[key] = value
+        })
+        return paramsObj
+      }
+      // 初始化参数
+      window.__EMP.globalParams = getGlobalSearchParams()
+  
+      var getOrigin = function() {
+        var origin = window.__EMP.globalParams.serverApi
+        return origin
+      }
+  
+      var getDevice = function() {
+        var userAgent = window.navigator.userAgent
+        var device = getURLSearchParams().get('device') || ''
+        var userAgentDevice =
+          (new RegExp(/Android|webOS|iPhone|iPod|BlackBerry|iPad|QQ|weixin|micromessenger|yy|mobile/, 'ig').test(userAgent) &&
+            'mobile') ||
+          (!new RegExp(/Android|webOS|iPhone|iPod|BlackBerry|iPad/, 'ig').test(userAgent) && 'pc') ||
+          (new RegExp(/pc|window|mac/, 'ig').test(userAgent) && 'pc') ||
+          ''
+        return {
+          device,
+          userAgentDevice,
+        }
+      }
+  
+      var getEnv = function() {
+        return window.__EMP.globalParams.env
+      }
+
+      var getEdit = function() {
+        return window.__EMP.globalParams.edit
+      }
+  
+      var getEngineEnv = function() {
+        return window.__EMP.globalParams.engineEnv
+      }
+  
+      var getRemoteEnv = function() {
+        return window.__EMP.globalParams.remoteEnv
+      }
+
+      var getId = function() {
+        return window.location.href.split(/\?|\//)[3]
+      }
+
+      var log = function() {
+        var args = Array.from(arguments)
+        console.log(`%c ${JSON.stringify(args)}`, 'color: red')
+      }
+
+      var setHeaderInfo = function () {
+        var icon = document.querySelector('link[rel=icon]')
+        icon.href = window.__EMP.globalStore.pageContent?.pageInfo?.pageIcon || icon.href
+        document.title = window.__EMP.globalStore.pageContent?.pageInfo?.pageName || ''
+      }
+
+      window.__EMP.globalStore = {
+        id: '',
+        content: {}, // deviceContent
+        pageContent: {},
+        lang: {},
+        env: '',
+        device: '',
+        edit: getEdit(),
+      }
+      window.__EMP.globalModules = {
+        // [scope]: [emp.js]
+      }
+  
+      var onQueueAction = function(name) {
+        var scriptModules = window.__EMP.globalModules[name]
+        if (scriptModules.ready && !scriptModules.process) {
+          scriptModules.process = true
+          var callback = function() {}
+          log('engine html', '待执行队列', scriptModules.queue.length, name)
+          while(callback = scriptModules.queue.shift()) {
+            callback && callback()
+          }
+          log('engine html', '完成队列执行', scriptModules.queue.length)
+          scriptModules.process = false
+        }
+      }
+      
+      var getScriptModules = function(name) {
+        window.__EMP.globalModules[name] = window.__EMP.globalModules[name] || {
+          script: null,
+          queue: [],
+          ready: false,
+          process: false,
+          name,
+          container: null,
+          containerQueue: []
+        }
+        return window.__EMP.globalModules[name]
+      }
+      
+      var createScriptElement = function(scope, url, callback) {
+        if (!url) {
+          return callback && callback()
+        }
+        var script = document.createElement('script')
+        var scriptModules = getScriptModules(scope)
+  
+        scriptModules.queue.push(function() {
+          callback && callback()
+        })
+        
+        if (scriptModules.script) {
+          log('engine html', '标签存在', url, scriptModules.queue.length)
+          return onQueueAction(scope)
+        } else {
+          scriptModules.script = script
+        }
+  
+        script.src = url
+        script.crossOrigin = 'anonymous'
+        script.onload = function() {
+          scriptModules.container = window[scope]
+          scriptModules.ready = true
+          onQueueAction(scope)
+          log('engine html', '完成创建标签', url, scriptModules.queue.length)
+        }
+  
+        script.onerror = function() {}
+        document.body.appendChild(script)
+      }
+  
+      window.__EMP.globalFunction = {
+        createScriptElement,
+        getEngineEnv,
+        getRemoteEnv,
+        getEnv,
+        getId,
+        getLocalEmpStore,
+        setLocalEmpStore,
+      }
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"
+    />
+    <link rel="dns-prefetch" href="//unpkg.yy.com">
+    <link rel="dns-prefetch" href="//unpkg.bdgamelive.com">
+  </head>
+  
+  <body >
+    <div id="emp-root"></div>
+  </body>
+</html>

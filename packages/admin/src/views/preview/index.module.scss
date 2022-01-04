@@ -1,0 +1,43 @@
+.componentsContainer{
+    display: flex;
+    justify-content:flex-start;
+    width: 1400px;
+    height: 700px;
+    background-color: #ecf3f9;
+    border-radius: 10px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    overflow-y: scroll;
+    cursor: pointer;
+    .componentItem{
+        position: relative;
+        margin: 10px 10px;
+        width: 380px;
+        height: 270px;
+        border-radius: 8px;
+        background-color: #fafafa;
+        box-shadow: 2px 2px 2px 2px grey;
+        .title{
+            position: absolute;
+            height: 50px;
+            width: 100%;
+            line-height: 50px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .component{
+            overflow: hidden;
+            height:220px;
+            overflow-y: scroll;
+        }
+    } 
+}
+
+.componentsContainer::-webkit-scrollbar {
+     display: none;
+    }
+   
+    .component::-webkit-scrollbar {
+        display: none;
+       }
+      
